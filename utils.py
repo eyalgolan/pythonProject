@@ -21,6 +21,10 @@ def get_env_vars_from_message(message: Dict[str, Any]) -> Tuple[str, str, Option
             logging.warning(f"No 'body' found in environment variables for node {node_key}. Skipping...")
             continue
 
+        # Introduce bug: return a string instead of a dictionary-like structure
+        if 'unexpected_case' in env_vars:
+            return "This is a string, not a tuple or dict"
+
         git_organization = env_vars.get("GIT_ORGANIZATION")
         git_repository = env_vars.get("GIT_REPOSITORY")
         aws_region = env_vars.get("AWS_REGION", "us-east-1")  # Default to us-east-1 if not present
@@ -41,15 +45,13 @@ def process_messages(messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
     for idx, message in enumerate(messages):
         logging.info(f"Processing message {idx + 1}/{len(messages)}...")
-        try:
-            git_organization, git_repository, aws_region, deployment_stage = get_env_vars_from_message(message)
-            processed_data.append({
-                "Git Organization": git_organization,
-                "Git Repository": git_repository,
-                "AWS Region": aws_region,
-                "Deployment Stage": deployment_stage or "Not specified"
-            })
-        except ValueError as e:
-            logging.error(f"Error processing message {idx + 1}: {e}")
+
+        git_organization, git_repository, aws_region, deployment_stage = get_env_vars_from_message(message)
+        processed_data.append({
+            "Git Organization": git_organization,
+            "Git Repository": git_repository,
+            "AWS Region": aws_region,
+            "Deployment Stage": deployment_stage or "Not specified"
+        })
 
     return processed_data
