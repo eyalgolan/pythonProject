@@ -1,4 +1,7 @@
-from utils import get_env_vars_from_message
+import logging
+from utils import get_env_vars_from_message, process_messages
+
+logging.basicConfig(level=logging.INFO)
 
 messages = [
     {
@@ -6,8 +9,10 @@ messages = [
             "node1": {
                 "environmentVariables": {
                     "body": {
-                        "GIT_ORGANIZATION": "org",
-                        "GIT_REPOSITORY": "repo"
+                        "GIT_ORGANIZATION": "org1",
+                        "GIT_REPOSITORY": "repo1",
+                        "AWS_REGION": "us-west-2",
+                        "DEBUG": "True"
                     }
                 }
             }
@@ -15,11 +20,11 @@ messages = [
     },
     {
         "contentsData": {
-            "node1": {
+            "node2": {
                 "environmentVariables": {
                     "body": {
-                        "GIT_ORGANIZATION": "org",
-                        "GIT_REPOSITORY": "repo"
+                        "GIT_ORGANIZATION": "org2",
+                        "GIT_REPOSITORY": "repo2"
                     }
                 }
             }
@@ -27,11 +32,13 @@ messages = [
     },
     {
         "contentsData": {
-            "node1": {
+            "node3": {
                 "environmentVariables": {
                     "body": {
-                        "GIT_ORGANIZATION": "org",
-                        "GIT_REPOSITORY": "repo"
+                        "GIT_ORGANIZATION": "org3",
+                        "GIT_REPOSITORY": "repo3",
+                        "DEPLOYMENT_STAGE": "production",
+                        "SOME_UNUSED_ENV_VAR": "value"
                     }
                 }
             }
@@ -41,5 +48,10 @@ messages = [
 
 
 def lambda_handler(event, context):
-    for message in messages:
-        print(get_env_vars_from_message(message))
+    logging.info("Lambda handler started processing messages.")
+    try:
+        processed_data = process_messages(messages)
+        for data in processed_data:
+            logging.info(f"Processed message data: {data}")
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
