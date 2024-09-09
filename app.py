@@ -50,14 +50,6 @@ messages = [
 
 def lambda_handler(event, context):
     logging.info("Lambda handler started processing messages.")
-    try:
-        processed_data = process_messages(messages)
-        for data in processed_data:
-            logging.info(f"Processed message data: {data}")
-    except Exception as e:
-        logging.error(f"An error occurred: {e}")
-
-logging.info("Lambda handler started processing messages.")
-processed_data = process_messages(messages)
-for data in processed_data:
-    logging.info(f"Processed message data: {data}")
+    processed_data = process_messages(messages)
+    for data in processed_data:
+        logging.info(f"Processed message data: {data}")
